@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.env
+
+# artifacts written by the CI gate agent at runtime
+gate-report.md
+gate-verdict.txt
+pr-diff.txt
