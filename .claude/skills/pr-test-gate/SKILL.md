@@ -13,7 +13,9 @@ built from the PR is already running; `PAYFLOW_BASE_URL` points at it.
 
 1. **Understand the change.** Read the provided diff summary. Identify which
    functional areas it touches (quotes/pricing, payments/lifecycle, idempotency,
-   KYC, pagination, web console, infra/config).
+   KYC, pagination, web console, infra/config) and which rules in
+   `docs/business-rules.md` it implicates. Implicated rules with no covering
+   test in the suite become `coverage_gaps` in the machine artifact (step 5).
 2. **Select tests** using `docs/test-selection.md`. State which rule(s) matched and
    why before running anything. If the diff is unclear or touches shared/infra code,
    select the **full suite** — when in doubt, run more, never less.
@@ -35,6 +37,11 @@ built from the PR is already running; `PAYFLOW_BASE_URL` points at it.
    - pass/fail counts,
    - one triage entry per failure: category, the business rule involved, evidence
      (request/response or UI observation), suggested severity.
+
+   Also write `gate-triage.json` next to it — the machine-readable artifact the
+   downstream stages (file-bugs, heal-tests, generate-tests) consume. Schema:
+   `docs/agent-pipeline.md`. It repeats the triage in structured form and adds
+   `coverage_gaps` (implicated rules with no covering test in the suite).
 6. **Write the verdict** to `gate-verdict.txt`: the single word `pass` or `fail`.
    The gate fails if any selected test failed for product-bug or environment
    reasons. Test-defect-only failures still fail the gate (a human must confirm

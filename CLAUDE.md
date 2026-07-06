@@ -14,6 +14,10 @@ Structure:
   `/api/admin/reset` before every test
 - `docs/business-rules.md` — the public contract; the only source of truth for
   assertions
+- `docs/agent-pipeline.md` — design of the AI quality pipeline (blocking gate +
+  async enrichment) and the `gate-triage.json` artifact schema
+- `.claude/skills/` — one skill per pipeline stage: `pr-test-gate`, `file-bugs`,
+  `heal-tests`, `generate-tests`
 - `k6/` — load test scripts
 
 Run with `pytest` from the project root against an already-running instance.
