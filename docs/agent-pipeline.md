@@ -23,10 +23,10 @@ SUT PR ──► understand ──► select ──► run ──► triage ─�
 
 | Stage | Where | Trigger | Consumes | Produces |
 |---|---|---|---|---|
-| `pr-test-gate` | SUT repo CI, **blocking** | PR opened/updated | SUT diff, `docs/test-selection.md`, `docs/business-rules.md` | `gate-report.md`, `gate-verdict.txt`, `gate-triage.json`, PR comment |
+| `pr-test-gate` | SUT repo CI, **blocking** | PR opened/updated; push to `main` (post-merge verification) | SUT diff, `docs/test-selection.md`, `docs/business-rules.md` | `gate-report.md`, `gate-verdict.txt`, `gate-triage.json`, PR comment (or run summary on `main` pushes) |
 | `file-bugs` | SUT repo CI, non-blocking | gate finished | `gate-triage.json` — `product-bug` entries | deduplicated GitHub issues on the SUT repo |
-| `heal-tests` | SUT repo CI, non-blocking | gate finished | `gate-triage.json` — `test-defect` / `environment` entries | mechanics-only fix PR on this repo (branch `ai-heal/pr-<n>`) |
-| `generate-tests` | SUT repo CI, non-blocking | gate finished | `gate-triage.json` — `coverage_gaps` | candidate-tests PR on this repo (branch `ai-tests/pr-<n>`) |
+| `heal-tests` | SUT repo CI, non-blocking | gate finished | `gate-triage.json` — `test-defect` / `environment` entries | mechanics-only fix PR on this repo (branch `ai-heal/pr-<n>`, or `ai-heal/main-<run-id>` for `main`-push runs) |
+| `generate-tests` | SUT repo CI, non-blocking | gate finished | `gate-triage.json` — `coverage_gaps` | candidate-tests PR on this repo (branch `ai-tests/pr-<n>`, or `ai-tests/main-<run-id>` for `main`-push runs) |
 
 Each stage has a skill under `.claude/skills/<stage>/SKILL.md`. The skill is the
 *process*; this document, `docs/test-selection.md`, and `docs/business-rules.md`
@@ -79,6 +79,8 @@ The chain is carried by one file the gate writes: **`gate-triage.json`**.
 
 Field notes:
 
+- `pr.number` — `0` when the run verifies a push to `main` (post-merge
+  verification) rather than a PR; `head_sha` is then the pushed commit.
 - `failures[].category` — exactly one of `product-bug`, `test-defect`,
   `environment` (same definitions as the pr-test-gate skill).
 - `failures[].rule` — quoted from `docs/business-rules.md`; empty only for
